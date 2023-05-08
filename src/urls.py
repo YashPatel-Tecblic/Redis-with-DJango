@@ -1,11 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from .views import *
+from . import views
 
 urlpatterns = [
+    path('recepi/',views.RecepiApi,name="khana")
 
-    path('',home , name='home'),
-    path('<int:id>',show , name='show'),
-    
 ]

@@ -1,47 +1,35 @@
-from django.shortcuts import render
+from django.shortcuts import render,HttpResponse
 from .models import *
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from rest_framework.response import Response
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 
 
 CACHE_TTL = getattr(settings ,'CACHE_TTL' , DEFAULT_TIMEOUT)
 
-def get_recipe(filter_recipe = None):
-    if filter_recipe:
-        print("DATA COMING FROM DB")
-        
-        recipes = Recipe.objects.filter(name__contains= filter_recipe)
-        # print(recipes)
+def RecepiApi(request):
+    if 'recipe' in cache:
+        products = cache.get('recipe')
+        return HttpResponse(products)
     else:
-        recipes = Recipe.objects.all()
-    return recipes
+        results = list(Recipe.objects.all().values())
+        cache.set("recipe", results, timeout=CACHE_TTL)
+        return HttpResponse(results)
 
-def home(request):
-    
-    filter_recipe = request.GET.get('recipe')
-    if cache.get(filter_recipe):
-        print("DATA COMING FROM CACHE HOME")
-        recipe = cache.get(filter_recipe)
-    else:
-        if filter_recipe:
-            recipe = get_recipe(filter_recipe)
-            cache.set(filter_recipe, recipe)
-        else:
-            recipe = get_recipe()
-         
-    context = {'recipe': recipe}
-    return render(request, 'home.html',context)
 
-def show(request,id):
-    if cache.get(id):
-        print("DATA COMING FROM CACHE SHOW")
-        recipe = cache.get(id)
-    else:
-        print("DATA COMING FROM DB")
-
-        recipe = Recipe.objects.get(id = id)
-        cache.set(id , recipe)
-    context = {'recipe' : recipe}
-    return render(request, 'show.html' , context)
+# def recepiApi(request):
+#     if 'recipe' in cache:
+#         result = cache.get('recipe')
+#         content ={
+#             'result':'From cache'
+#         }
+#         return JsonResponse(result,content)
+#     else:
+#         results = list(Recipe.objects.all()) 
+#         cache.set("recipe",results,timeout=CACHE_TTL)
+#         content = {
+#             'result': 'From Database'
+#         }
+#         return JsonResponse(results,content)
