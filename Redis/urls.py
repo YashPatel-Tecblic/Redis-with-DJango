@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from src import views
+
+
+
+# router.register('recepiapi',views.RecepiViewSet,basename='Recepi')
 
 urlpatterns = [
     path('',include('src.urls')),
-    
     path('admin/', admin.site.urls),
 ]

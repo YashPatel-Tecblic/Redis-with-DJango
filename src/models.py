@@ -9,4 +9,4 @@ class Recipe(models.Model):
     image = models.CharField(max_length=400)
 
     def __str__(self):
-        return self.name    
+        return self.name      
